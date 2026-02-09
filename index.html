@@ -4,8 +4,421 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Belsem Be My Valentine 💘</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #f58cc0, #ff48a9);
+    }
+    
+    .container {
+      text-align: center;
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      color: #ff1493;
+      font-size: 32px;
+      margin: 0 0 30px 0;
+    }
+    
+    .buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+    
+    button {
+      padding: 12px 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+    
+    .yes-btn {
+      background-color: #ff1493;
+      color: white;
+    }
+    
+    .yes-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(255, 20, 147, 0.4);
+    }
+    
+    .no-btn {
+      background-color: #ddd;
+      color: #333;
+    }
+    
+    .no-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    
+    .no-btn.moving {
+      position: fixed !important;
+    }
+    
+    .carousel-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      animation: fadeIn 0.3s ease-in;
+    }
+    
+    .carousel-modal.show {
+      display: flex;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    
+    .carousel-container {
+      position: relative;
+      width: 100vw;
+      background: transparent;
+      border-radius: 0;
+      overflow: hidden;
+      box-shadow: none;
+      margin-left: calc(-50vw + 50%);
+    }
+    
+    .carousel-wrapper {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      overflow: hidden;
+      background: transparent;
+    }
+    
+    .carousel-track {
+      display: flex;
+      height: 100%;
+      gap: 15px;
+      padding: 0 15px;
+
+    }
+    
+    .carousel-slide {
+      min-width: 400px;
+      height: 100%;
+      flex-shrink: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: visible; /* allow shadow to extend outside */
+    }
+
+    .slide-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 14px;
+      overflow: hidden;
+      position: relative;
+      z-index: 2;
+    }
+
+    .carousel-slide::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: -18px;
+      width: 90%;
+      height: 60px;
+      pointer-events: none;
+      z-index: 1;
+      background: radial-gradient(60% 60% at 50% 50%, rgba(255,20,147,0.28), rgba(255,105,180,0.16) 40%, transparent 70%);
+      filter: blur(18px);
+      border-radius: 50%;
+      opacity: 0.95;
+    }
+
+    .carousel-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    
+    .carousel-text {
+      color: white;
+      font-size: clamp(48px, 8vw, 120px);
+      line-height: 1.05;
+      font-weight: 800;
+      margin-bottom: 24px;
+      text-align: center;
+      animation: fadeIn 0.5s ease-in;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    
+    /* Hearts animation overlay */
+    #hearts {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: visible;
+      z-index: 1500;
+    }
+
+    .heart {
+      position: absolute;
+      left: 50%;
+      top: 80%;
+      transform: translateX(-50%);
+      will-change: transform, opacity;
+      animation: floatUp var(--dur, 3s) linear forwards;
+      filter: drop-shadow(0 6px 12px rgba(255,20,147,0.25));
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(0.9) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-120vh) scale(1.2) rotate(30deg);
+        opacity: 0;
+      }
+    }
+  </style>
 </head>
 <body>
-  <p>Hello world!</p>
+  <div class="container">
+    <h1>Belsem, Will you be my valentine? 💘</h1>
+    <div class="buttons">
+      <button class="yes-btn" onclick="handleYes()">Yes</button>
+      <button class="no-btn" onclick="handleNo()">No</button>
+    </div>
+  </div>
+  
+  <div class="carousel-modal" id="carouselModal">
+    <div>
+      <div class="carousel-text">I love you habibti ❤️</div>
+      <div class="carousel-container">
+        <div class="carousel-wrapper">
+        <div class="carousel-track"></div>
+      </div>
+      </div>
+    </div>
+  </div>
+  
+        <div id="hearts" aria-hidden="true"></div>
+
+  <script>
+    function handleYes() {
+      const modal = document.getElementById('carouselModal');
+      modal.classList.add('show');
+      startCarouselAnimation();
+      // spawn hearts for a few seconds
+      spawnHearts(60000, 100);
+    }
+    
+    let carouselAnimationId = null;
+    
+    function startCarouselAnimation() {
+      const track = document.querySelector('.carousel-track');
+      if (!track) return;
+
+      // continuous pixels per second (tune this for speed)
+      const pixelsPerSecond = 200;
+
+      // compute half of the track (we duplicated slides so first half == original slides)
+      const trackWidth = track.scrollWidth;
+      const halfWidth = trackWidth / 2;
+
+      let currentPosition = 0;
+
+      function animate(time) {
+        if (!animate.lastTime) animate.lastTime = time;
+        const delta = time - animate.lastTime;
+        animate.lastTime = time;
+
+        // advance by pixelsPerSecond scaled by delta milliseconds
+        currentPosition += pixelsPerSecond * (delta / 1000);
+
+        // when we pass halfWidth, wrap by subtracting halfWidth to create seamless loop
+        if (currentPosition >= halfWidth) {
+          currentPosition -= halfWidth;
+        }
+
+        track.style.transform = `translateX(-${currentPosition}px)`;
+        carouselAnimationId = requestAnimationFrame(animate);
+      }
+
+      if (carouselAnimationId) cancelAnimationFrame(carouselAnimationId);
+      animate.lastTime = null;
+      carouselAnimationId = requestAnimationFrame(animate);
+    }
+    
+    // Build carousel slides from local images folder (use uploaded filenames)
+    function buildCarouselFromImages() {
+      const track = document.querySelector('.carousel-track');
+      if (!track) return;
+
+      // List of image filenames (from images/ folder)
+      const imageFiles = [
+        "WhatsApp Image 2026-02-09 at 6.21.58 PM.jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (1).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (10).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (11).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (12).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (13).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (14).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (15).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (16).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (17).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (18).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (19).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (2).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (20).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (21).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (22).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (23).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (24).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (25).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (3).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (4).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (5).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (6).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (7).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (8).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM (9).jpeg",
+        "WhatsApp Image 2026-02-09 at 6.23.42 PM.jpeg"
+      ];
+
+      // helper to create slide element
+      function appendSlide(filename) {
+        const slide = document.createElement('div');
+        slide.className = 'carousel-slide';
+        const inner = document.createElement('div');
+        inner.className = 'slide-inner';
+        const img = document.createElement('img');
+        // encode filename for URL
+        img.src = 'images/' + encodeURIComponent(filename);
+        img.alt = filename;
+        inner.appendChild(img);
+        slide.appendChild(inner);
+        track.appendChild(slide);
+      }
+
+      // clear any existing
+      track.innerHTML = '';
+
+      // append original set
+      imageFiles.forEach(f => appendSlide(f));
+      // append duplicate set for seamless looping
+      imageFiles.forEach(f => appendSlide(f));
+    }
+
+    // Build slides immediately so trackWidth is available
+    buildCarouselFromImages();
+    
+    function handleNo() {
+      const noBtn = document.querySelector('.no-btn');
+      const yesBtn = document.querySelector('.yes-btn');
+      
+      noBtn.classList.add('moving');
+      
+      // Shrink No button by 5%
+      let currentScale = parseFloat(noBtn.dataset.scale) || 1;
+      currentScale *= 0.95;
+      noBtn.dataset.scale = currentScale;
+      noBtn.style.transform = `scale(${currentScale})`;
+      
+      // Scale up Yes button by 10%
+      let yesScale = parseFloat(yesBtn.dataset.scale) || 1;
+      yesScale *= 1.10;
+      yesBtn.dataset.scale = yesScale;
+      yesBtn.style.transform = `scale(${yesScale})`;
+      
+      // Get Yes button position with padding
+      const yesBtnRect = yesBtn.getBoundingClientRect();
+      const padding = 100;
+      
+      let randomX, randomY;
+      let validPosition = false;
+      let attempts = 0;
+      
+      // Keep generating random positions until we find one that doesn't overlap with Yes button
+      while (!validPosition && attempts < 100) {
+        randomX = Math.random() * (window.innerWidth - 100);
+        randomY = Math.random() * (window.innerHeight - 50);
+        
+        // Check if the random position would overlap with the Yes button area
+        if (randomX + 100 < yesBtnRect.left - padding ||
+            randomX > yesBtnRect.right + padding ||
+            randomY + 50 < yesBtnRect.top - padding ||
+            randomY > yesBtnRect.bottom + padding) {
+          validPosition = true;
+        }
+        attempts++;
+      }
+      
+      noBtn.style.left = randomX + 'px';
+      noBtn.style.top = randomY + 'px';
+    }
+
+    // Hearts animation: spawn hearts for a short duration
+    function createHeart() {
+      const container = document.getElementById('hearts');
+      if (!container) return;
+      const el = document.createElement('div');
+      el.className = 'heart';
+      el.textContent = '❤️';
+
+      const size = Math.floor(Math.random() * 36) + 24; // 24px - 60px
+      el.style.fontSize = size + 'px';
+
+      const left = Math.random() * 100; // percentage
+      el.style.left = left + '%';
+
+      const dur = (Math.random() * 1.6 + 1.2).toFixed(2) + 's';
+      el.style.setProperty('--dur', dur);
+
+      const rotate = (Math.random() * 60 - 30).toFixed(1);
+      el.style.transform = `translateX(-50%) rotate(${rotate}deg)`;
+
+      container.appendChild(el);
+      el.addEventListener('animationend', () => el.remove());
+    }
+
+    function spawnHearts(duration = 3000, interval = 120) {
+      const stopAt = Date.now() + duration;
+      const timer = setInterval(() => {
+        createHeart();
+        if (Date.now() > stopAt) {
+          clearInterval(timer);
+        }
+      }, interval);
+    }
+  </script>
 </body>
 </html>
